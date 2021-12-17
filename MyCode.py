@@ -97,6 +97,16 @@ def task3():
     print("\nModel Function: \n", f0)
     print("Jacobian: \n ", J)
 
+def task4():
+    BreamFeatures, BreamTarget, BreamLabel, PerchFeatures, PerchTarget, PerchLabel = task1()
+    
+    deg = 2
+    x = np.zeros(num_coefficients(deg))
+    f0, J = linearize(deg, x, BreamFeatures)
+
+    dp = calculate_update(BreamTarget, f0, J)
+    print(dp)
+
 
 def linearize(deg,p0, data):
     f0 = poly(deg,p0,data)
@@ -109,6 +119,14 @@ def linearize(deg,p0, data):
         di = (fi - f0)/epsilon
         J[:,i] = di
     return f0,J
+
+def calculate_update(y,f0,J):
+    l=1e-2
+    N = np.matmul(J.T,J) + l*np.eye(J.shape[1])
+    r = y-f0
+    n = np.matmul(J.T,r)    
+    dp = np.linalg.solve(N,n)       
+    return dp
 
 def num_coefficients(d):
     t = 0
@@ -141,4 +159,4 @@ def poly(Degree, ParameterVector, array):
 
     return Polynomials
     
-task3()
+task4()
