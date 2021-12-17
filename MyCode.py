@@ -6,6 +6,7 @@
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm, trange
 
 def loadCSV():
     #Loads the file
@@ -82,7 +83,62 @@ def task1():
 def task2():
     BreamFeatures, BreamTarget, BreamLabel, PerchFeatures, PerchTarget, PerchLabel = task1()
     
+    deg = 2
+    x = np.zeros(num_coefficients(deg))
+    print(poly(2, x, BreamFeatures))
 
+def task3():
+    BreamFeatures, BreamTarget, BreamLabel, PerchFeatures, PerchTarget, PerchLabel = task1()
     
+    deg = 2
+    x = np.zeros(num_coefficients(deg))
+    f0,J = linearize(deg, x, BreamFeatures)
 
-task2()
+    print("\nModel Function: \n", f0)
+    print("Jacobian: \n ", J)
+
+
+def linearize(deg,p0, data):
+    f0 = poly(deg,p0,data)
+    J = np.zeros((len(f0), len(p0)))
+    epsilon = 1e-6
+    for i in range(len(p0)):
+        p0[i] += epsilon
+        fi = poly(deg,p0,data)
+        p0[i] -= epsilon
+        di = (fi - f0)/epsilon
+        J[:,i] = di
+    return f0,J
+
+def num_coefficients(d):
+    t = 0
+
+    for loop1 in range(d + 1):
+        for loop2 in range(loop1 + 1):
+            for loop3 in range(loop1 + 1):
+                for loop4 in range(loop1 + 1):
+                    for loop5 in range(loop1 + 1):
+                        for loop6 in range(loop1 + 1):
+                            if loop2 + loop3 + loop4 + loop5 + loop6 == loop1:
+                                t = t+1
+
+    return t
+
+def poly(Degree, ParameterVector, array):
+    Polynomials = np.zeros(array.shape[0])    
+    t = 0
+
+    for loop1 in range(Degree + 1):
+        for loop2 in range(loop1 + 1):  #Length1
+            for loop3 in range(loop1 + 1):  #Length2
+                for loop4 in range(loop1 + 1):  #Length3
+                    for loop5 in range(loop1 + 1):  #Height
+                        for loop6 in range(loop1 + 1):  #Weight
+
+                            if loop2 + loop3 + loop4 + loop5 + loop6 == loop1:
+                                Polynomials += ParameterVector[t]*(array["Length1"].values**loop2)*(array["Length2"].values**loop3)*(array["Length3"].values**loop4)*(array["Height"].values**loop5)*(array["Width"].values**loop6)
+                                t = t+1
+
+    return Polynomials
+    
+task3()
